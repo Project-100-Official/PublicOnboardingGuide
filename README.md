@@ -57,12 +57,12 @@ Follow these steps to set up your workspace:
 
 1. Download and Install VS Code from [Visual Studio Code](https://code.visualstudio.com/).
 2. Sign into VS Code using your GitHub account
-   - Click on the **Accounts** icon ![accountsicon](./Images/AccountsIcon.png) in the lower-left corner of VS Code.
+   - Click on the **Accounts** icon ![accountsicon](Onboarding/Images/AccountsIcon.png) in the lower-left corner of VS Code.
    - Select Sign in with GitHub and follow the prompts.
    - Signing in allows you to sync your settings across devices and ensures you already have access to our repository.
    - **Note**: VS Code can also be accessed from a web browser at [vscode.dev](https://vscode.dev/), but it has limitations in extension support. It is useful for quick edits on the go but is not a full replacement for the desktop version.
 3. Install required extensions:
-   - Open the **Extensions Tab** by clicking the **Extensions** icon ![extensionsicon](./Images/ExtensionsIcon.png) on the sidebar or by pressing `Ctrl + Shift + X`.
+   - Open the **Extensions Tab** by clicking the **Extensions** icon ![extensionsicon](Onboarding/Images/ExtensionsIcon.png) on the sidebar or by pressing `Ctrl + Shift + X`.
    - Extensions in VS Code allow you to enhance functionality, such as adding support for specific languages and tools. This flexibility makes VS Code highly customizable for different development needs. You may find a few other extensions that help yourpersoanl workflow or maybe just a new theme for Visual Studio Code.
    - Search for and install the following extensions:
       - [Rojo](https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo)
@@ -131,7 +131,7 @@ Once Git is installed, you need to clone the project 100 repository to your loca
 
 3. Open the Project in VS Code:
    - Open a folder as covered in [Cloning the Repository](#cloning-the-repository) and select the newly created `Project100` folder.
-   - Open the **Explorer Tab** by clicking on the **Explorer** icon ![explorericon](./Images/ExplorerIcon.png) or by pressing `Ctrl + Shift + E`. 
+   - Open the **Explorer Tab** by clicking on the **Explorer** icon ![explorericon](Onboarding/Images/ExplorerIcon.png) or by pressing `Ctrl + Shift + E`. 
 
 You should now see the project files in the **Explorer Tab**, ready for development.
 
@@ -176,7 +176,7 @@ Project100/
 ## Git Workflow and Branching Strategy
 In this project, we follow a structured Git branching strategy to ensure smooth collaboration and code management. If you’re new to Git, don’t worry—this section will guide you through the process of working with branches, committing changes, and keeping your code up to date.
 
-For more specific details about the branching strategy, please review the [Git Branching Strategy](./GitBranchingStrategy.md) guide. 
+For more specific details about the branching strategy, please review the [Git Branching Strategy](Onboarding/GitBranchingStrategy.md) guide. 
 
 #### Main Branches
 - **master** – Main branch containing the latest development changes.
@@ -205,10 +205,10 @@ git reset --hard origin/master         # Reset master to match origin/master
 ```
 
 Using VS Code UI:
-1. Open the **Source Control** panel by clicking the **Source Control** icon ![sourcecontrolicon](./Images/SourceControlIcon.png) or by pressing `Ctrl + Shift + G`.
+1. Open the **Source Control** panel by clicking the **Source Control** icon ![sourcecontrolicon](Onboarding/Images/SourceControlIcon.png) or by pressing `Ctrl + Shift + G`.
 2. Click on the "..." button (More Actions):
 
-   ![moreactions](./Images/MoreActions.png)
+   ![moreactions](Onboarding/Images/MoreActions.png)
 
 3. Hover over **Pull, Push** and select **Pull (Rebase)**
 
@@ -224,7 +224,7 @@ Using the Command Palette:
 ### Working with Branches
 
 #### Creating a New Branch
-As per the [Git Branching Strategy](./GitBranchingStrategy.md), when adding a new feature or bug fix, you **must** create a branch from `origin/master`. Hotfixes must actually branch from `stable`.
+As per the [Git Branching Strategy](Onboarding/GitBranchingStrategy.md), when adding a new feature or bug fix, you **must** create a branch from `origin/master`. Hotfixes must actually branch from `stable`.
 
 When making a new feature branch, the name of the branch should be `feature-` followe dby the name of the feature. For example, a double-jump feature branch would be named `feature-DoubleJump`. If making a bug fix branch, the name should be `bug-` followed by a name for the bug (try to remain short and concise here). Finally, for hotfix branches, `hotfix-` and the hotfix name. (Unfamiliar with what a hotfix is? Check [here](https://en.wikipedia.org/wiki/Hotfix))
 
@@ -238,7 +238,7 @@ git push -u origin feature-FEATURE_NAME             # Push branch to GitHub
 Using VS Code UI:
 1. Open the **Source Control** panel (`Ctrl + Shift + G`) and click on the **branch name** (or on the **branch name** at the bottom left corner of the workspace window):
 
-   ![branchname](./Images/BranchName.png)
+   ![branchname](Onboarding/Images/BranchName.png)
 
 2. Select "**Create new branch from...**" and select `origin/master`
    - Your local `master` shgould be up to date if you've followed the workflow, so you could also branch from `master` here instead.
@@ -269,7 +269,7 @@ Using VS Code:
 1. Open **Source Control** (`Ctrl + Shift + G`)
 2. Click the `+` button next to modified files (or click the "**Stage All**" `+`, arrow pointing to it):
    
-   ![stagechnages](./Images/StageChanges.png)
+   ![stagechnages](Onboarding/Images/StageChanges.png)
 
 3. Enter a commit message (see [below](#writing-commit-messages-in-visual-studio-code)).
 4. Click "**Commit**"
@@ -278,7 +278,7 @@ If, at this point, your branch has not been published to the online repository, 
 
 You may encounter the button showing somethign similar to the following:
 
-![synchchanges](./Images/SyncChanges.png)
+![synchchanges](Onboarding/Images/SyncChanges.png)
 
 In this case, the number shown adn the down arrow means there are 65 changes in the origin that need to be synced to you loacal repository. Make sure to stay updated.
 
@@ -312,7 +312,7 @@ added logic for regenerating player health every 5 seconds. Also fixed a bug whe
 #### Using GitHub Copilot to Generate Messages
 VS Code also has a "**Generate Commit Message with Copilot**" option:
 
-![generatewithcopilot](./Images/GenerateCopilot.png)
+![generatewithcopilot](Onboarding/Images/GenerateCopilot.png)
 
 Copilot can analyze your changes and suggest a commit message for you. However, it's important to review the message before committing. Sometimes the suggested messages might not fully capture the intent or context of your changes, so make sure to edit or refine them as needed.
 
@@ -331,7 +331,7 @@ Using VS Code UI:
 1. Open the **Source Control** view (`Ctrl + Shift + G`).
 2. Click on the "..." button (More Actions):
 
-    ![moreactions](./Images/MoreActions.png)
+    ![moreactions](Onboarding/Images/MoreActions.png)
 
 3. Hover over **Pull, Push** and select **Pull (Rebase)**
 
@@ -366,14 +366,14 @@ Using VS Code UI:
 1. **Switch to the `feature-*` branch:**
    - Open the **Source Control** panel (`Ctrl + Shift + G`) and click on the **branch name** (or on the **branch name** at the bottom left corner of the workspace window):
 
-      ![branchname](./Images/BranchName.png)
+      ![branchname](Onboarding/Images/BranchName.png)
 
    - Select `feature-*` (not `origin/feature-*`)
    Replace `*` with the actual name of your feature branch.
 
 2. In the **Source Control** view, click on the "..." button (More Actions):
 
-    ![moreactions](./Images/MoreActions.png)
+    ![moreactions](Onboarding/Images/MoreActions.png)
 
 3. Hover over **Pull, Push** and select **Push**
    - Make sure there are not unstaged or committed changes.
@@ -384,11 +384,11 @@ The next step is to create a pull request to merge your feature branch into `mas
 1. Navigate to the [GitHub repository](https://github.com/Project-100-Official/Project100/)
 2. Open the **Pull Requests** tab and select **New Pull Request**, or you may see the following, in which case, if it's your feature branch, click the **Compare & pull request** button:
 
-   ![pullrequest1](./Images/PullRequest1.png)
+   ![pullrequest1](Onboarding/Images/PullRequest1.png)
 
 3. Ensure you've selected your feature branch as the **source** and `master` as the **target**:
 
-   ![pullrequest2](./Images/PullRequest2.png)
+   ![pullrequest2](Onboarding/Images/PullRequest2.png)
 
 4. Add a clear title and description for the pull request to explain the changes you’ve made.
 
@@ -408,7 +408,7 @@ Using VS Code UI:
 1. Open the **Source Control** view (`Ctrl + Shift + G`).
 2. Click on the "..." button (More Actions):
 
-    ![moreactions](./Images/MoreActions.png)
+    ![moreactions](Onboarding/Images/MoreActions.png)
 
 3. Hover over **Branch** and select **Delete Branch...**
 4. Select your feature branch

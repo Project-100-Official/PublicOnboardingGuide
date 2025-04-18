@@ -32,7 +32,7 @@ By following these guidelines, we ensure that our team operates smoothly, effici
 ### Final note before we get you set up:
 If you come across an issue in the code that needs to be looked at, you can create an **Issue** from GitHub using the tab at the top:
 
-![issue](./Images/Issue.png)
+![issue](./Onboarding/Images/Issue.png)
 
 Make sure to first search for or look through and find if your issue has already been made by someone else.
 
@@ -77,12 +77,12 @@ Follow these steps to set up your workspace:
 
 1. Download and Install VS Code from [Visual Studio Code](https://code.visualstudio.com/).
 2. Sign into VS Code using your GitHub account
-   - Click on the **Accounts** icon ![accountsicon](./Images/AccountsIcon.png) in the lower-left corner of VS Code.
+   - Click on the **Accounts** icon ![accountsicon](./Onboarding/Images/AccountsIcon.png) in the lower-left corner of VS Code.
    - Select Sign in with GitHub and follow the prompts.
    - Signing in allows you to sync your settings across devices and ensures you already have access to our repository.
    - **Note**: VS Code can also be accessed from a web browser at [vscode.dev](https://vscode.dev/), but it has limitations in extension support. It is useful for quick edits on the go but is not a full replacement for the desktop version.
 3. Install required extensions:
-   - Open the **Extensions Tab** by clicking the **Extensions** icon ![extensionsicon](./Images/ExtensionsIcon.png) on the sidebar or by pressing `Ctrl + Shift + X`.
+   - Open the **Extensions Tab** by clicking the **Extensions** icon ![extensionsicon](./Onboarding/Images/ExtensionsIcon.png) on the sidebar or by pressing `Ctrl + Shift + X`.
    - Extensions in VS Code allow you to enhance functionality, such as adding support for specific languages and tools. This flexibility makes VS Code highly customizable for different development needs. You may find a few other extensions that help yourpersoanl workflow or maybe just a new theme for Visual Studio Code.
    - Search for and install the following extensions:
       - [Rojo](https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo)
@@ -167,7 +167,7 @@ Once Git is installed, you need to clone the project 100 repository to your loca
 
 3. Open the Project in VS Code:
    - Open a folder as covered in [Cloning the Repository](#cloning-the-repository) and select the newly created `Project100` folder.
-   - Open the **Explorer Tab** by clicking on the **Explorer** icon ![explorericon](./Images/ExplorerIcon.png) or by pressing `Ctrl + Shift + E`. 
+   - Open the **Explorer Tab** by clicking on the **Explorer** icon ![explorericon](./Onboarding/Images/ExplorerIcon.png) or by pressing `Ctrl + Shift + E`. 
 
 You should now see the project files in the **Explorer Tab**, ready for development.
 
@@ -329,10 +329,10 @@ git reset --hard origin/master         # Reset master to match origin/master
 ```
 
 Using VS Code UI:
-1. Open the **Source Control** panel by clicking the **Source Control** icon ![sourcecontrolicon](./Images/SourceControlIcon.png) or by pressing `Ctrl + Shift + G`.
+1. Open the **Source Control** panel by clicking the **Source Control** icon ![sourcecontrolicon](./Onboarding/Images/SourceControlIcon.png) or by pressing `Ctrl + Shift + G`.
 2. Click on the "..." button (More Actions):
 
-   ![moreactions](./Images/MoreActions.png)
+   ![moreactions](./Onboarding/Images/MoreActions.png)
 
 3. Hover over **Pull, Push** and select **Pull (Rebase)**
 
@@ -362,7 +362,7 @@ git push -u origin feature-FEATURE_NAME             # Push branch to GitHub
 Using VS Code UI:
 1. Open the **Source Control** panel (`Ctrl + Shift + G`) and click on the **branch name** (or on the **branch name** at the bottom left corner of the workspace window):
 
-   ![branchname](./Images/BranchName.png)
+   ![branchname](./Onboarding/Images/BranchName.png)
 
 2. Select "**Create new branch from...**" and select `origin/master`
    - Your local `master` shgould be up to date if you've followed the workflow, so you could also branch from `master` here instead.
@@ -393,7 +393,7 @@ Using VS Code:
 1. Open **Source Control** (`Ctrl + Shift + G`)
 2. Click the `+` button next to modified files (or click the "**Stage All**" `+`, arrow pointing to it):
    
-   ![stagechnages](./Images/StageChanges.png)
+   ![stagechnages](./Onboarding/Images/StageChanges.png)
 
 3. Enter a commit message (see [below](#writing-commit-messages-in-visual-studio-code)).
 4. Click "**Commit**"
@@ -402,7 +402,7 @@ If, at this point, your branch has not been published to the online repository, 
 
 You may encounter the button showing somethign similar to the following:
 
-![synchchanges](./Images/SyncChanges.png)
+![synchchanges](./Onboarding/Images/SyncChanges.png)
 
 In this case, the number shown adn the down arrow means there are 65 changes in the origin that need to be synced to you loacal repository. Make sure to stay updated.
 
@@ -436,7 +436,7 @@ added logic for regenerating player health every 5 seconds. Also fixed a bug whe
 #### Using GitHub Copilot to Generate Messages
 VS Code also has a "**Generate Commit Message with Copilot**" option:
 
-![generatewithcopilot](./Images/GenerateCopilot.png)
+![generatewithcopilot](./Onboarding/Images/GenerateCopilot.png)
 
 Copilot can analyze your changes and suggest a commit message for you. However, it's important to review the message before committing. Sometimes the suggested messages might not fully capture the intent or context of your changes, so make sure to edit or refine them as needed.
 
@@ -456,7 +456,7 @@ Using VS Code UI:
 1. Open the **Source Control** view (`Ctrl + Shift + G`).
 2. Click on the "..." button (More Actions):
 
-    ![moreactions](./Images/MoreActions.png)
+    ![moreactions](./Onboarding/Images/MoreActions.png)
 
 3. Hover over **Pull, Push** and select **Pull (Rebase)**
 
@@ -480,21 +480,21 @@ Using VS Code UI:
 ### Handling Merge Conflicts
 While this should be minimal if you're keeping to your own code and not affecting scripts outside of your task, it's understandable that sometime you need to tie into or make minor changes to existing scripts. When this happens, it's possible and even likely that you will see a merge conflict when rebasing/pulling from `master`. If a conflict occurs, you will be presented with the file the conflict happened in and see your changes (what exist on your system) and the incoming changes (what exist in the GitHub repo). This window will look something like this, showing each line with conflicts:
 
-![mergeconflict](./Images/MergeConflict.png)
+![mergeconflict](./Onboarding/Images/MergeConflict.png)
 
 In the bottom right corner of the file will be a button allowing you to resolve any conflicts in the Merge Editor:
 
-![resolvemerge](./Images/ResolveInMergeEditor.png)
+![resolvemerge](./Onboarding/Images/ResolveInMergeEditor.png)
 
 This will open the **3-way Merge Editor**. On the top-left side, you will see the incoming changes. On the top-right, your existing changes. The screen beneath those is the final state of the file after either accepting the incoming changes or selecting to keep your own changes:
 
-![threewaymerge](./Images/ThreeWayMergeEditor.png)
+![threewaymerge](./Onboarding/Images/ThreeWayMergeEditor.png)
 
 🚨 **IMPORTANT**: There's usually a reason that the file has changes like it does. Unless it's something truly trivial, make sure to check with the group chat and see if there's a reason you should have to keep those changes, or to argue that your changes are preferred. If all else fails, you can include both changes by selecting "Accept Combination" and even selecting which change to include first. Also note that, even if you overwrite with your changes, during the final merge of your branch into the `master` branch, it will be reviewed and handled there as well, so don't sweat the small stuff.
 
 One you've completed accepting changes one way or the other, select the "Complete Merge" button in the bottom right corner to complete the changes:
 
-![complete](./Images/CompleteMerge.png)
+![complete](./Onboarding/Images/CompleteMerge.png)
 
 ---
 
@@ -525,14 +525,14 @@ Using VS Code UI:
 1. **Switch to the `feature-*` branch:**
    - Open the **Source Control** panel (`Ctrl + Shift + G`) and click on the **branch name** (or on the **branch name** at the bottom left corner of the workspace window):
 
-      ![branchname](./Images/BranchName.png)
+      ![branchname](./Onboarding/Images/BranchName.png)
 
    - Select `feature-*` (not `origin/feature-*`)
    Replace `*` with the actual name of your feature branch.
 
 2. In the **Source Control** view, click on the "..." button (More Actions):
 
-    ![moreactions](./Images/MoreActions.png)
+    ![moreactions](./Onboarding/Images/MoreActions.png)
 
 3. Hover over **Pull, Push** and select **Push**
    - Make sure there are not unstaged or committed changes.
@@ -543,11 +543,11 @@ The next step is to create a pull request to merge your feature branch into `mas
 1. Navigate to the [GitHub repository](https://github.com/Project-100-Official/Project100/)
 2. Open the **Pull Requests** tab and select **New Pull Request**, or you may see the following, in which case, if it's your feature branch, click the **Compare & pull request** button:
 
-   ![pullrequest1](./Images/PullRequest1.png)
+   ![pullrequest1](./Onboarding/Images/PullRequest1.png)
 
 3. Ensure you've selected your feature branch as the **source** and `master` as the **target**:
 
-   ![pullrequest2](./Images/PullRequest2.png)
+   ![pullrequest2](./Onboarding/Images/PullRequest2.png)
 
 4. Add a clear title and description for the pull request to explain the changes you’ve made.
 5. On the right side of the Pull Request window, you can assign the request to @Distracted-Games.
@@ -568,7 +568,7 @@ Using VS Code UI:
 1. Open the **Source Control** view (`Ctrl + Shift + G`).
 2. Click on the "..." button (More Actions):
 
-    ![moreactions](./Images/MoreActions.png)
+    ![moreactions](./Onboarding/Images/MoreActions.png)
 
 3. Hover over **Branch** and select **Delete Branch...**
 4. Select your feature branch

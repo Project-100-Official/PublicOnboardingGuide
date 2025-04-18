@@ -5,7 +5,9 @@ Welcome to the Project 100 code repository! This document will guide you through
 ### First thing's first...
 
 ## Writing Clean, Consistent, and Typed Code
-Before diving into setting up your development environment, it's crucial to establish a standard for how we write code. All team members must follow the [Roblox Lua Style Guide](https://roblox.github.io/lua-style-guide/) and use type annotations from the start. These are not optional best practices—they are required for maintaining clean, readable, and efficient code across our team.
+Before diving into setting up your development environment, it's crucial to establish a standard for how we write code. All team members **must** follow the [Roblox Lua Style Guide](https://roblox.github.io/lua-style-guide/) as closely as possibe, **especially the section on [File Structure](https://roblox.github.io/lua-style-guide/#file-structure)** and use type annotations from the start. These are not optional best practices—they are required for maintaining clean, readable, and efficient code across our team.
+
+Take it from someone who comes from having worked with actual game development teams. These are industry standards for a reason and Roblox game development, while currently feeling like it sits over in a shadowing corner by itself, is still game development, and utilizing these proven standards in development will allow the team and the project to thrive.
 
 ### Why This Matters
 1. **Consistency Across Developers** – Everyone writing code the same way makes it easier to read, debug, and collaborate. When code is predictable, it reduces the time spent deciphering different formatting styles.
@@ -21,8 +23,24 @@ Before diving into setting up your development environment, it's crucial to esta
 - **Use meaningful variable and function names** – Avoid vague names like `data`, `x`, or `stuff`. Your code should be self-explanatory.
 - **Comment where necessary** – Explain complex logic, but don’t over-comment obvious things. Comments should clarify why something is done, not what the code does (unless it's non-obvious).
 - **Use type annotations everywhere** – This is mandatory for functions, tables, and any variables where types matter.
+- **Do not parent assets or instances to scripts** - Not only is this more difficult using VS Code and Rojo, it creates issues with dependencies. Instead, place them in an appropriate folder either in `ReplicatedStorage` or `ServerStorage`.
+- **Scripts go in the `Source` folders and nowhere else**: Keeping our scripts in these places will prevent issues down the line and allow for easier debugging as needed, including with dependencies.
+- **We're using a Modular Framework** - Every script you write should be a `ModuleScript`. See [below](#modular-framework) for more on this.
 
 By following these guidelines, we ensure that our team operates smoothly, efficiently, and with high-quality code. The better we adhere to these practices, the more time we save and the better the project will be.
+
+### Final note before we get you set up:
+If you come across an issue in the code that needs to be looked at, you can create an **Issue** from GitHub using the tab at the top:
+
+![issue](./Images/Issue.png)
+
+Make sure to first search for or look through and find if your issue has already been made by someone else.
+
+Simply select "New Issue" from the top left on the `Issues` screen and make a meanningful title and include a meaningful description (if needed). On the right side, you can select an assignee using the `Assignees` gear. This would be who you want to have look at the issue (usually @Distracted-Games, but maybe @tyswinger, aka @Vortex). While not neccessary, adding a label can be helpful as well by using the `Labels` gear. If the issue is related to, but not the same as another issue on the issue board, you can select that issue as a parent using the `Relationships` gear or by selecting `Create sub-issue` from the related issue.
+
+Finally, once you have your issue report set up, simply scroll down and select `Create`.
+
+Note, if you need to add more context to the issue after creation, or want to add some insight to another existing issue, you can leave comments by opening the issue up.
 
 Now, let’s get you set up! 🚀
 
@@ -36,12 +54,14 @@ Now, let’s get you set up! 🚀
 - [Understanding the Repository](#understanding-the-repository)
    - [Project Structure](#project-structure)
    - [Key Directories](#key-directories)
+   - [Modular Framework](#modular-framework)
 - [Git Workflow and Branching Strategy](#git-workflow-and-branching-strategy)
    - [Keeping Your Code Updated](#keeping-your-code-updated)
    - [Working with Branches](#working-with-branches)
    - [Making Changes and Commiting](#making-changes-and-committing)
    - [Writing Commit Messages](#writing-commit-messages-in-visual-studio-code)
    - [Keeping Your Branch Updated](#keeping-your-branch-updated)
+   - [Handling Merge Conflicts](#handling-merge-conflicts)
    - [Merging and Deleting Your Branches](#merging-and-deleting-your-branches)
 
 ---
@@ -186,6 +206,94 @@ Project100/
 
 - #### `ReadMe` Files, `Utility`, and `SharedConstants`
    Make sure to check the Readme files for useful methods and modules that will be added to the repo. A number of the added utilities will save you time and effort and some will be mandatory to use. For example, in `ReplicatedStorage/Source/SharedConstants`, we will have many of the game's configurations, themes, and Enums. Enums are best used for both avoiding typos and for getting an auto-complete list of available options for a specific use. As an example, if you are working with weapons in any way, you should be requiring the `WeaponType` module. This will then give you an up-to-date list of all the weapon types in the game without having to guess or look it up.
+
+---
+
+### Modular Framework
+We're utilizing a modular framework for this project. If you're unfamiliar, that just means that there is only (ideally) a single server `Script` and a single `LocalScript` in the entire project and the rest are all `ModuleScripts`. A module loader handles requires on both server- and client-side as well as inital functionality. This is to ensure proper ordering of script loading as required. Most scripts will not haev to worry too much about this, but read on for the how-to.
+
+The `ModuleLoader` module will loop through each `ModuleScript`, require it, and then look for an `Initialize` function. After running through all of the scripts that have `Initialize` functions, it then loops back through looking for any `Initiate` functions. Most script will only need an `Initiate` function to get things going, but utilizing an `Initialize` function guarantees that whatever is included in that function will run **before** any script runs its `Initiate` function. (I probably should have named them a little differently 😝)
+
+As always, server-side scripts will load prior to client-side scripts, so the order that everything occurs is as follows:
+1. Each Module on the server is:
+   - Required first
+   - Skipped past if the return value of the module is only a function
+   - Then it's `Initalize` function is called
+2. After all server-side `Initialize` functions have been called:
+   - The `Initiate` function is called on each server-side script (if it has one)
+3. Each module on the client is:
+   - Required first
+   - Skipped past if the return value of the module is only a function
+   - Then it's `Initalize` function is called
+4. After all client-side `Initialize` functions have been called:
+   - The `Initiate` function is called on each client-side script (if it has one)
+
+
+- **When to use `Initialize`**:
+   While rarely used, this is a great place to put any necessary setup stuff or to resolve timing issues. For example, let's say we have a client-side script that connects a bindable event listener to run some logic. The bindable event is going to be fired from another client-side module. Without utilizing some sort of ordering, there's no way to guarantee that the event listener will be connected prior to the event being fired. If you include the event listener connection in an `Initialize` funcntion of the first script, even if you don't include the fire call of the event in an `Initiate` function on the other script, you've guaranteed that the connection is set up before the other script is going to run its logic and therefore fire the event. You can certainly still set the fire call in an `Initiate` function though.
+
+   * Other examples:
+   1. **Prebuilding Static Data**
+
+      Some modules might need to generate or cache static data tables, like mapping data, animation tracks, or some other configurations prior to other scripts then using that data. This is a decent use-case for this function.
+
+   2. **Internal Configuration Setup**
+
+      Setting up internal state or configurations from a ConfigModule or environment settings here ensures that the config is ready before anything like remote events or loops that use it in Initiate.
+
+   3. **Remote Event Creation or Assignment**
+
+      If you dynamically create or attach to RemoteEvents or RemoteFunctions, do it here so Initiate can safely connect them.
+
+   4. **Preloading or Preparing Assets**
+
+      If you have assets that should be preloaded before anything visual or functional depends on them.
+
+   5. **Dependency Linking (Except Module References)**
+
+      If a module depends on other modules, this isn't for that. It's required before running either Initialize or Initiate functions so any require calls at the top will be performed regardless. If there's a super specific use of dependencies that need to be loaded prior to the Initate function of either the same module or other modules.
+
+- **When to use `Initiate`**:
+   `Initiate` is the easy one. If you have any remote connections or function calls that need to happen when the script starts up, place them in that function. Basically anything you would have run when the script starts.
+
+Example:
+```lua
+-- Module 1
+local function initialize()
+   bindableEvent.Event:Connect(function(message: string)
+      print(message)
+   )
+end
+
+return {
+   Initialize = initialize,
+}
+```
+```lua
+-- Module 2
+local function initiate()
+   bindableEvent.Fire("This event has to fire after the connection is setup")
+end
+
+return {
+   Initiate = initiate,
+}
+```
+Note that the return values for those modules are specifically setup for modules that **only** need to return either `Initialize` or `Initiate` functions, but you can also return any other values (including other functions) in those tables as well. If you prefer, you can also use the typical module setup:
+```lua
+local ModuleName = {}
+
+function ModuleName.Initialize()
+   -- logic
+end
+
+function ModuleName.Initiate()
+   --logic
+end
+
+return ModuleName
+```
+Either way works fine.
 
 ---
 
@@ -341,6 +449,7 @@ Using CLI:
 ```bash
 git fetch origin              # Get latest changes
 git rebase origin/master      # Reapply your changes on top of the latest master
+# Review any merge conflicts, accept either incoming or current (usually incoming)
 ```
 
 Using VS Code UI:
@@ -351,14 +460,48 @@ Using VS Code UI:
 
 3. Hover over **Pull, Push** and select **Pull (Rebase)**
 
-🚨 Rebasing prevents merge conflicts and keeps your feature branch in sync with master.
+🚨 Rebasing helps prevent messy merge conflicts* and keeps your feature branch in sync with master.
+   *Conflicts can still happen during rebase if your local changes touch the same lines/files as the remote changes.
+
+   The difference is:
+   - With a merge, all conflicting changes are handled at once, in a potentially huge merge commit.
+   - With a rebase, conflicts are handled commit by commit, which can be easier to reason through.
+
+   **Example**:
+   If you made 3 commits locally, and only the 2nd conflicts during rebase:
+   - Git will stop at that commit.
+   - You resolve just that conflict.
+   - Then continue the rebase (using the UI or):
+   ```bash
+   git rebase --continue
+   ```
+---
+
+### Handling Merge Conflicts
+While this should be minimal if you're keeping to your own code and not affecting scripts outside of your task, it's understandable that sometime you need to tie into or make minor changes to existing scripts. When this happens, it's possible and even likely that you will see a merge conflict when rebasing/pulling from `master`. If a conflict occurs, you will be presented with the file the conflict happened in and see your changes (what exist on your system) and the incoming changes (what exist in the GitHub repo). This window will look something like this, showing each line with conflicts:
+
+![mergeconflict](./Images/MergeConflict.png)
+
+In the bottom right corner of the file will be a button allowing you to resolve any conflicts in the Merge Editor:
+
+![resolvemerge](./Images/ResolveInMergeEditor.png)
+
+This will open the **3-way Merge Editor**. On the top-left side, you will see the incoming changes. On the top-right, your existing changes. The screen beneath those is the final state of the file after either accepting the incoming changes or selecting to keep your own changes:
+
+![threewaymerge](./Images/ThreeWayMergeEditor.png)
+
+🚨 **IMPORTANT**: There's usually a reason that the file has changes like it does. Unless it's something truly trivial, make sure to check with the group chat and see if there's a reason you should have to keep those changes, or to argue that your changes are preferred. If all else fails, you can include both changes by selecting "Accept Combination" and even selecting which change to include first. Also note that, even if you overwrite with your changes, during the final merge of your branch into the `master` branch, it will be reviewed and handled there as well, so don't sweat the small stuff.
+
+One you've completed accepting changes one way or the other, select the "Complete Merge" button in the bottom right corner to complete the changes:
+
+![complete](./Images/CompleteMerge.png)
 
 ---
 
 ### Merging and Deleting Your Branches
-🚨 **IMPORTANT**: You will only ever be deleting your **own** branches. **Never** delete another developer's branch unless explicietly asked to.
+🚨 **IMPORTANT**: You will only ever be deleting your **own** branches. **Never** delete another developer's branch unless explicietly asked to for some reason.
 
-Once you’ve completed work on your feature branch (or bug fix/hotfix), the next step is to create a **Pull Request** on GitHub to mergeyout feature branch into the `master` branch. Then you can cleanup your local branches.
+Once you’ve completed work on your feature branch (or bug fix/hotfix), the next step is to create a **Pull Request** on GitHub to merge your branch into the `master` branch. Then you can cleanup your local branches.
 
 Follow these steps to make sure everything is smooth and well-organized:
 
@@ -407,6 +550,7 @@ The next step is to create a pull request to merge your feature branch into `mas
    ![pullrequest2](./Images/PullRequest2.png)
 
 4. Add a clear title and description for the pull request to explain the changes you’ve made.
+5. On the right side of the Pull Request window, you can assign the request to @Distracted-Games.
 
 **Note**: Only the project lead (@DistractedGames) will review and handle the merging of pull requests. Developers are responsible for creating the pull request but should **not merge it themselves**.
 

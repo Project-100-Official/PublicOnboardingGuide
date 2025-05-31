@@ -1,8 +1,41 @@
 # Project 100 Code Repository Onboarding
 
+### READ THE ENTIRE DOCUMENT
+This document is somewhat long, but contains srucial innformation and rules to follow when working with the project's development. Unless stated otherwise, **nothing** included here is optional.
+
 Welcome to the Project 100 code repository! This document will guide you through setting up your development environment, understanding the project structure, and using Git for version control. If you have any questions, please reach out to [@DistractedGames](https://discordapp.com/users/358030688785793026).
 
+### Table of Contents
+- [Getting Started](#getting-started)
+   - [Setting up Visual Studio Code](#setting-up-visual-studio-code)
+   - [Installing Git](#installing-git)
+   - [Cloning the Repository](#cloning-the-repository)
+- [Understanding the Repository](#understanding-the-repository)
+   - [Project Structure](#project-structure)
+   - [Key Directories](#key-directories)
+   - [Modular Framework](#modular-framework)
+- [Git Workflow and Branching Strategy](#git-workflow-and-branching-strategy)
+   - [Keeping Your Code Updated](#keeping-your-code-updated)
+   - [Adding Branch Protection](#adding-branch-protection-for-master-and-stable)
+   - [Working with Branches](#working-with-branches)
+   - [Making Changes and Commiting](#making-changes-and-committing)
+   - [Writing Commit Messages](#writing-commit-messages-in-visual-studio-code)
+   - [Keeping Your Branch Updated](#keeping-your-branch-updated)
+   - [Handling Merge Conflicts](#handling-merge-conflicts)
+   - [Merging and Deleting Your Branches](#merging-and-deleting-your-branches)
+
+---
+
 ### First thing's first...
+
+## Above All Else
+- You are **not** to touch the code in either the `master` or `stable` branches.
+   - See [below](#adding-branch-protection-for-master-and-stable) for setting up branch protection on your local system to prevent mistakes.
+- The `DevTest_Template` place within Floor One is to be copied and updated by you to your own test file.
+   - **Do not** make changes to any code within the `DevTest_Template` itself. This will be managed by @DistractedGames or @Vortex only.
+   - Non-script instances, such as Remote Events, Models/Meshes/Parts, Animations, etc. that are needed to be added for your task are fine to add to the `DevTest_Template` once you submit your [Pull Request](#merging-and-deleting-your-branches). Only touch and handle what is your direct responsibility and nothing else.
+
+These boundaries help preserve project integrity, keeping consistency across the project and preserves the intended chain of responsibility, so that core systems remain stable and maintainable as the project scales.
 
 ## Writing Clean, Consistent, and Typed Code
 Before diving into setting up your development environment, it's crucial to establish a standard for how we write code. All team members **must** follow the [Roblox Lua Style Guide](https://roblox.github.io/lua-style-guide/) as closely as possibe, **especially the section on [File Structure](https://roblox.github.io/lua-style-guide/#file-structure)** and use type annotations from the start. These are not optional best practices—they are required for maintaining clean, readable, and efficient code across our team.
@@ -43,26 +76,6 @@ Finally, once you have your issue report set up, simply scroll down and select `
 Note, if you need to add more context to the issue after creation, or want to add some insight to another existing issue, you can leave comments by opening the issue up.
 
 Now, let’s get you set up! 🚀
-
----
-
-### Table of Contents
-- [Getting Started](#getting-started)
-   - [Setting up Visual Studio Code](#setting-up-visual-studio-code)
-   - [Installing Git](#installing-git)
-   - [Cloning the Repository](#cloning-the-repository)
-- [Understanding the Repository](#understanding-the-repository)
-   - [Project Structure](#project-structure)
-   - [Key Directories](#key-directories)
-   - [Modular Framework](#modular-framework)
-- [Git Workflow and Branching Strategy](#git-workflow-and-branching-strategy)
-   - [Keeping Your Code Updated](#keeping-your-code-updated)
-   - [Working with Branches](#working-with-branches)
-   - [Making Changes and Commiting](#making-changes-and-committing)
-   - [Writing Commit Messages](#writing-commit-messages-in-visual-studio-code)
-   - [Keeping Your Branch Updated](#keeping-your-branch-updated)
-   - [Handling Merge Conflicts](#handling-merge-conflicts)
-   - [Merging and Deleting Your Branches](#merging-and-deleting-your-branches)
 
 ---
 
@@ -318,7 +331,7 @@ These branches have a limited lifespan and serve specific purposes:
 ### Keeping Your Code Updated
 Before creating a new branch, you must always pull the latest changes from `origin/master` (`origin` meaning from the online GitHub repo). This ensures your branch is up to date and prevents conflicts.
 
-🚨 You should never work directly in `master` adn definitely not `stable`! Always create a new branch from `origin/master`.
+🚨 You should never work directly in `master` and definitely not `stable`! Always create a new branch from `origin/master`.
 
 #### Fetching the Latest Changes ( prior to creating a new branch )
 Using CLI:
@@ -342,6 +355,30 @@ Using the Command Palette:
    - Note that the Command Palette is a fuzzy search, so as you type it updates the results. You may only need to type 'pullr' to get the correct option. Also note that it saves your most recent actions, so you may not have to type anything at all if you've used the command recently.
 
 🚨 This ensures your local `master` branch exactly matches `origin/master` before branching.
+
+---
+
+### Adding Branch Protection for `master` and `stable`
+Included in the repo is a `scripts/` folder. Inside that folder are a couple of bash scripts that will add a `pre-push` hook into `.git/hooks` and prevent accidentally pushing code directly to the `master` or `stable` branches. Follow the instructions below to install it:
+
+1. Open your terminal either by using the keyboard shortcut `` Ctrl + ` `` or by going to `Terminal > New Terminal`
+
+![newterminal](./Onboarding/Images/NewTerminal.png)
+
+2. Copy and Paste or type the following command exactly, then press `Enter`:
+```bash
+bash scripts/setup-hooks.sh
+```
+
+3. Test it worked by typing the following and pressing `Enter` (**MAKE SURE NO CHANGES HAVE BEEN MADE TO `master` BEFORE DOING THIS**)
+```bash
+git push
+```
+
+You should receive the following message if it is set up correctly:
+```bash
+❌ Push to master is blocked. Create a feature branch and use a pull request instead.
+```
 
 ---
 
@@ -398,13 +435,19 @@ Using VS Code:
 3. Enter a commit message (see [below](#writing-commit-messages-in-visual-studio-code)).
 4. Click "**Commit**"
 
-If, at this point, your branch has not been published to the online repository, the "**Commit**" button will change to say "**Publish Branch**". Go ahead and click this to publish your new branch to the online repo. Otherwise, the button should show "**Sync Changes**". Clicking this will again push the changes to the online repo.
+If, at this point, your branch has not been published to the online repository, the "**Commit**" button will change to say "**Publish Branch**". Go ahead and click this to publish your new branch to the online repo or use the CLI command below. Otherwise, the button should show "**Sync Changes**". Clicking this will again push the changes to the online repo.
+
+CLI Command for Publishing a new branch to GitHub:
+```bash
+git push origin feature-*
+```
+Replace `*` with the actual name of your feature branch.
 
 You may encounter the button showing somethign similar to the following:
 
 ![synchchanges](./Onboarding/Images/SyncChanges.png)
 
-In this case, the number shown adn the down arrow means there are 65 changes in the origin that need to be synced to you loacal repository. Make sure to stay updated.
+In this case, the number shown and the down arrow means there are 65 changes in the origin that need to be synced to you loacal repository. Make sure to stay updated.
 
 ---
 
@@ -499,7 +542,7 @@ One you've completed accepting changes one way or the other, select the "Complet
 ---
 
 ### Merging and Deleting Your Branches
-🚨 **IMPORTANT**: You will only ever be deleting your **own** branches. **Never** delete another developer's branch unless explicietly asked to for some reason.
+🚨 **IMPORTANT**: You will only ever be deleting your **own** online branches. **Never** delete another developer's branch unless explicietly asked to for some reason.
 
 Once you’ve completed work on your feature branch (or bug fix/hotfix), the next step is to create a **Pull Request** on GitHub to merge your branch into the `master` branch. Then you can cleanup your local branches.
 

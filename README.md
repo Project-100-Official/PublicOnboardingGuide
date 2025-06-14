@@ -14,6 +14,7 @@ Welcome to the Project 100 code repository! This document will guide you through
    - [Project Structure](#project-structure)
    - [Key Directories](#key-directories)
    - [Modular Framework](#modular-framework)
+   - [Network Module](#network-module)
 - [Git Workflow and Branching Strategy](#git-workflow-and-branching-strategy)
    - [Keeping Your Code Updated](#keeping-your-code-updated)
    - [Adding Branch Protection](#adding-branch-protection-for-master-and-stable)
@@ -65,7 +66,7 @@ By following these guidelines, we ensure that our team operates smoothly, effici
 ### Final note before we get you set up:
 If you come across an issue in the code that needs to be looked at, you can create an **Issue** from GitHub using the tab at the top:
 
-![issue](./Onboarding/Images/Issue.png)
+![issue](./Images/Issue.png)
 
 Make sure to first search for or look through and find if your issue has already been made by someone else.
 
@@ -90,12 +91,12 @@ Follow these steps to set up your workspace:
 
 1. Download and Install VS Code from [Visual Studio Code](https://code.visualstudio.com/).
 2. Sign into VS Code using your GitHub account
-   - Click on the **Accounts** icon ![accountsicon](./Onboarding/Images/AccountsIcon.png) in the lower-left corner of VS Code.
+   - Click on the **Accounts** icon ![accountsicon](./Images/AccountsIcon.png) in the lower-left corner of VS Code.
    - Select Sign in with GitHub and follow the prompts.
    - Signing in allows you to sync your settings across devices and ensures you already have access to our repository.
    - **Note**: VS Code can also be accessed from a web browser at [vscode.dev](https://vscode.dev/), but it has limitations in extension support. It is useful for quick edits on the go but is not a full replacement for the desktop version.
 3. Install required extensions:
-   - Open the **Extensions Tab** by clicking the **Extensions** icon ![extensionsicon](./Onboarding/Images/ExtensionsIcon.png) on the sidebar or by pressing `Ctrl + Shift + X`.
+   - Open the **Extensions Tab** by clicking the **Extensions** icon ![extensionsicon](./Images/ExtensionsIcon.png) on the sidebar or by pressing `Ctrl + Shift + X`.
    - Extensions in VS Code allow you to enhance functionality, such as adding support for specific languages and tools. This flexibility makes VS Code highly customizable for different development needs. You may find a few other extensions that help yourpersoanl workflow or maybe just a new theme for Visual Studio Code.
    - Search for and install the following extensions:
       - [Rojo](https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo)
@@ -180,7 +181,7 @@ Once Git is installed, you need to clone the project 100 repository to your loca
 
 3. Open the Project in VS Code:
    - Open a folder as covered in [Cloning the Repository](#cloning-the-repository) and select the newly created `Project100` folder.
-   - Open the **Explorer Tab** by clicking on the **Explorer** icon ![explorericon](./Onboarding/Images/ExplorerIcon.png) or by pressing `Ctrl + Shift + E`. 
+   - Open the **Explorer Tab** by clicking on the **Explorer** icon ![explorericon](./Images/ExplorerIcon.png) or by pressing `Ctrl + Shift + E`. 
 
 You should now see the project files in the **Explorer Tab**, ready for development.
 
@@ -310,6 +311,87 @@ Either way works fine.
 
 ---
 
+### Network Module
+
+In our repo, we don't handle `RemoteEvents` or `RemoteFunctions` as normal for Roblox development. Rather, we utilize a `Network` module that handles the creation of, and firing/connecting to the events and functions. Note: Bindable events are still handled the same as before, though, with the [modular framework](#modular-framework), bindables have little to no reason to exist since you can simply require the other module and call the necessary functionality directly.
+
+When adding a new `RemoteEvent` or `RemoteFunction`, simply open the appropriate folder in the `ReplicatedStorage/Source/Network/RemoteName` folder. For example, a remote event will be added to the `RemoteEventName.luau` file. Make sure to add the string literal to the `EnumType` at the top, as well as add the Enum itself in the `RemoteName` table:
+```lua
+export type EnumType =
+   "PlayerDataLoaded"
+    | "PlayerDataUpdated"
+    | "PlayerDataSaved"
+    | "NewRemoteEvent" -- Add the new remote event's name here as a string literal.
+
+local RemoteEventName = {
+    -- PlayerData Remotes
+    PlayerDataLoaded = "PlayerDataLoaded" :: "PlayerDataLoaded",
+    PlayerDataUpdated = "PlayerDataUpdated" :: "PlayerDataUpdated",
+    PlayerDataSaved = "PlayerDataSaved" :: "PlayerDataSaved",
+
+    NewRemoteEvent = "NewRemoteEvent" :: "NewRemoteEvent", -- Add the new remote event Enum entry
+}
+
+return RemoteEventName
+```
+Doing this accomplishes two things:
+1. On server startup, the `Network` module will create each of the remotes that are listed in the name modules.
+2. You can now access the remote using the `Network` module.
+
+🤔**How it Works**
+
+Let's use the example `RemoteEvent` from above ("NewRemoteEvent"). Below, we're requiring the `Network` module, setting a function that, when called, also fires the event (in this example, from client to server), then connects to the event to subscribe to it:
+```lua
+-- Client script
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Network = require(ReplicatedStorage.Source.Network)
+
+local newValue = 0 -- For example
+
+local function addFive(n: number)
+   local result = n + 5
+   -- We call the `fireServer` method from Network.
+   -- First argument is the remote event name.
+   -- Can include any number of other arguments, just like a normal event.
+   Network.fireServer(Network.RemoteEvents.NewRemoteEvent, result)
+end
+
+-- Saving connection for disconnection later to prevent memory leaks (not shown here).
+-- Similar to before, `connectEvent` takes the remote event name as the first argument.
+-- The second argument is the callback function, just like a normal `Connect` would have.
+local connection = Network.connectEvent(Network.RemoteEvents.NewRemoteEvent, function(value: number)
+   newValue += value
+   print(newValue) -- Should print 50 (20 + 5 + 25)
+end)
+
+addFive(20)
+```
+```lua
+-- Server script
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Network = require(ReplicatedStorage.Source.Network)
+
+local function doubleNumber(player: Player, n: number)
+   local result = n + n
+   -- As with the others, the first argument for `fireServer` is the remote name.
+   -- The second argument is the player to send the event to.
+   -- You can have any number of additional arguments after.
+   Network.fireClient(Network.RemoteEvents.NewRemoteEvent, player, result)
+end
+
+-- Notice we're not having to use `onServerEvent`, only a single `connectEvent`.
+-- Just like a normal client to server event, the receiver gets the player object as the first argument,
+-- which lines up perfectly to our function's expected parameters.
+local connection = Network.connectEvent(Network.RemoteEvents.NewRemoteEvent, doubleNumber)
+```
+An addition the Network module gives over normal `RemoteEvent` usage is the ability to `fireAllClientsExcept`. This event fires to all clients **except** the given `player` (second argument, structured just like a `firClient` event: `Network.fireAllClientsExcept(Network.RemoteEvents.NewRemoteEvent, player)`).
+
+Hopefully this simple example is enough to help clarify how to use the Network module in place of traditional Remotes, but like everything else, if you need help or have questions, hit up [@DistractedGames](https://discordapp.com/users/358030688785793026).
+
+---
+
 ## Git Workflow and Branching Strategy
 In this project, we follow a structured Git branching strategy to ensure smooth collaboration and code management. If you’re new to Git, don’t worry—this section will guide you through the process of working with branches, committing changes, and keeping your code up to date.
 
@@ -342,10 +424,10 @@ git reset --hard origin/master         # Reset master to match origin/master
 ```
 
 Using VS Code UI:
-1. Open the **Source Control** panel by clicking the **Source Control** icon ![sourcecontrolicon](./Onboarding/Images/SourceControlIcon.png) or by pressing `Ctrl + Shift + G`.
+1. Open the **Source Control** panel by clicking the **Source Control** icon ![sourcecontrolicon](./Images/SourceControlIcon.png) or by pressing `Ctrl + Shift + G`.
 2. Click on the "..." button (More Actions):
 
-   ![moreactions](./Onboarding/Images/MoreActions.png)
+   ![moreactions](./Images/MoreActions.png)
 
 3. Hover over **Pull, Push** and select **Pull (Rebase)**
 
@@ -363,7 +445,7 @@ Included in the repo is a `scripts/` folder. Inside that folder are a couple of 
 
 1. Open your terminal either by using the keyboard shortcut `` Ctrl + ` `` or by going to `Terminal > New Terminal`
 
-![newterminal](./Onboarding/Images/NewTerminal.png)
+![newterminal](./Images/NewTerminal.png)
 
 2. Copy and Paste or type the following command exactly, then press `Enter`:
 ```bash
@@ -399,7 +481,7 @@ git push -u origin feature-FEATURE_NAME             # Push branch to GitHub
 Using VS Code UI:
 1. Open the **Source Control** panel (`Ctrl + Shift + G`) and click on the **branch name** (or on the **branch name** at the bottom left corner of the workspace window):
 
-   ![branchname](./Onboarding/Images/BranchName.png)
+   ![branchname](./Images/BranchName.png)
 
 2. Select "**Create new branch from...**" and select `origin/master`
    - Your local `master` shgould be up to date if you've followed the workflow, so you could also branch from `master` here instead.
@@ -430,7 +512,7 @@ Using VS Code:
 1. Open **Source Control** (`Ctrl + Shift + G`)
 2. Click the `+` button next to modified files (or click the "**Stage All**" `+`, arrow pointing to it):
    
-   ![stagechnages](./Onboarding/Images/StageChanges.png)
+   ![stagechnages](./Images/StageChanges.png)
 
 3. Enter a commit message (see [below](#writing-commit-messages-in-visual-studio-code)).
 4. Click "**Commit**"
@@ -445,7 +527,7 @@ Replace `*` with the actual name of your feature branch.
 
 You may encounter the button showing somethign similar to the following:
 
-![synchchanges](./Onboarding/Images/SyncChanges.png)
+![synchchanges](./Images/SyncChanges.png)
 
 In this case, the number shown and the down arrow means there are 65 changes in the origin that need to be synced to you loacal repository. Make sure to stay updated.
 
@@ -479,7 +561,7 @@ added logic for regenerating player health every 5 seconds. Also fixed a bug whe
 #### Using GitHub Copilot to Generate Messages
 VS Code also has a "**Generate Commit Message with Copilot**" option:
 
-![generatewithcopilot](./Onboarding/Images/GenerateCopilot.png)
+![generatewithcopilot](./Images/GenerateCopilot.png)
 
 Copilot can analyze your changes and suggest a commit message for you. However, it's important to review the message before committing. Sometimes the suggested messages might not fully capture the intent or context of your changes, so make sure to edit or refine them as needed.
 
@@ -499,7 +581,7 @@ Using VS Code UI:
 1. Open the **Source Control** view (`Ctrl + Shift + G`).
 2. Click on the "..." button (More Actions):
 
-    ![moreactions](./Onboarding/Images/MoreActions.png)
+    ![moreactions](./Images/MoreActions.png)
 
 3. Hover over **Pull, Push** and select **Pull (Rebase)**
 
@@ -523,21 +605,21 @@ Using VS Code UI:
 ### Handling Merge Conflicts
 While this should be minimal if you're keeping to your own code and not affecting scripts outside of your task, it's understandable that sometime you need to tie into or make minor changes to existing scripts. When this happens, it's possible and even likely that you will see a merge conflict when rebasing/pulling from `master`. If a conflict occurs, you will be presented with the file the conflict happened in and see your changes (what exist on your system) and the incoming changes (what exist in the GitHub repo). This window will look something like this, showing each line with conflicts:
 
-![mergeconflict](./Onboarding/Images/MergeConflict.png)
+![mergeconflict](./Images/MergeConflict.png)
 
 In the bottom right corner of the file will be a button allowing you to resolve any conflicts in the Merge Editor:
 
-![resolvemerge](./Onboarding/Images/ResolveInMergeEditor.png)
+![resolvemerge](./Images/ResolveInMergeEditor.png)
 
 This will open the **3-way Merge Editor**. On the top-left side, you will see the incoming changes. On the top-right, your existing changes. The screen beneath those is the final state of the file after either accepting the incoming changes or selecting to keep your own changes:
 
-![threewaymerge](./Onboarding/Images/ThreeWayMergeEditor.png)
+![threewaymerge](./Images/ThreeWayMergeEditor.png)
 
 🚨 **IMPORTANT**: There's usually a reason that the file has changes like it does. Unless it's something truly trivial, make sure to check with the group chat and see if there's a reason you should have to keep those changes, or to argue that your changes are preferred. If all else fails, you can include both changes by selecting "Accept Combination" and even selecting which change to include first. Also note that, even if you overwrite with your changes, during the final merge of your branch into the `master` branch, it will be reviewed and handled there as well, so don't sweat the small stuff.
 
 One you've completed accepting changes one way or the other, select the "Complete Merge" button in the bottom right corner to complete the changes:
 
-![complete](./Onboarding/Images/CompleteMerge.png)
+![complete](./Images/CompleteMerge.png)
 
 ---
 
@@ -568,14 +650,14 @@ Using VS Code UI:
 1. **Switch to the `feature-*` branch:**
    - Open the **Source Control** panel (`Ctrl + Shift + G`) and click on the **branch name** (or on the **branch name** at the bottom left corner of the workspace window):
 
-      ![branchname](./Onboarding/Images/BranchName.png)
+      ![branchname](./Images/BranchName.png)
 
    - Select `feature-*` (not `origin/feature-*`)
    Replace `*` with the actual name of your feature branch.
 
 2. In the **Source Control** view, click on the "..." button (More Actions):
 
-    ![moreactions](./Onboarding/Images/MoreActions.png)
+    ![moreactions](./Images/MoreActions.png)
 
 3. Hover over **Pull, Push** and select **Push**
    - Make sure there are not unstaged or committed changes.
@@ -586,11 +668,11 @@ The next step is to create a pull request to merge your feature branch into `mas
 1. Navigate to the [GitHub repository](https://github.com/Project-100-Official/Project100/)
 2. Open the **Pull Requests** tab and select **New Pull Request**, or you may see the following, in which case, if it's your feature branch, click the **Compare & pull request** button:
 
-   ![pullrequest1](./Onboarding/Images/PullRequest1.png)
+   ![pullrequest1](./Images/PullRequest1.png)
 
 3. Ensure you've selected your feature branch as the **source** and `master` as the **target**:
 
-   ![pullrequest2](./Onboarding/Images/PullRequest2.png)
+   ![pullrequest2](./Images/PullRequest2.png)
 
 4. Add a clear title and description for the pull request to explain the changes you’ve made.
 5. On the right side of the Pull Request window, you can assign the request to @Distracted-Games.
@@ -611,7 +693,7 @@ Using VS Code UI:
 1. Open the **Source Control** view (`Ctrl + Shift + G`).
 2. Click on the "..." button (More Actions):
 
-    ![moreactions](./Onboarding/Images/MoreActions.png)
+    ![moreactions](./Images/MoreActions.png)
 
 3. Hover over **Branch** and select **Delete Branch...**
 4. Select your feature branch
